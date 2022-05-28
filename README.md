@@ -1,2 +1,5 @@
-# ESP32TinyVectrex
-Port Vectrex John Hawthorn to ESP32
+# Tiny Vectrex port ESP32
+<ul>
+ <li><a href='readmeEnglish.md'>English Doc</a></li>
+ <li><a href='readmeSpanish.md'>Spanish Doc</a></li>
+</ul>
