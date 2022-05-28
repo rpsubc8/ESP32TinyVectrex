@@ -58,7 +58,12 @@ Se permite cargar:
 Se dispone de un OSD básico de bajos recursos, es decir, muy simple, que se visualiza pulsando la tecla <b>F1</b>.
  <center><img src='https://raw.githubusercontent.com/rpsubc8/ESP32TinyVectrex/main/preview/previewOSD.gif'></center>
  Los ficheros deben ser convertidos a .h en hexadecimal. Puede usarse la herramienta online:<br>
- <a href='http://tomeko.net/online_tools/file_to_hex.php?lang=en'>http://tomeko.net/online_tools/file_to_hex.php?lang=en</a>
+ <a href='http://tomeko.net/online_tools/file_to_hex.php?lang=en'>http://tomeko.net/online_tools/file_to_hex.php?lang=en</a><br>
+ Se permite usar:
+ <ul>
+ <li>Cursores izquierda, derecha, arriba, abajo</li>
+ <li>Teclas a, s, d, f</li>
+ </ul>
 
 
 <br><br>
@@ -66,7 +71,7 @@ Se dispone de un OSD básico de bajos recursos, es decir, muy simple, que se vis
 El archivo <b>gbConfig.h</b> se seleccionan las opciones:
 <ul>
  <li><b>use_lib_vga640x480:</b> Modo de video 640x480.</li>
- <li><b>use_lib_vga800x600 </b> Modo de video 800x600.</li>
- <li><b>use_lib_vga1024x768 </b> Modo de video 1024x768.</li>
+ <li><b>use_lib_vga800x600:</b> Modo de video 800x600.</li>
+ <li><b>use_lib_vga1024x768:</b> Modo de video 1024x768.</li>
 </ul>
  
