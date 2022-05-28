@@ -1,6 +1,6 @@
 # Tiny ESP32 Vectrex
 Port x86 del emulador Vectrex de John Hawthorn al ESP32.<br>
-<center><img src='https://raw.githubusercontent.com/rpsubc8/ESP32TinyVectrex/main/preview/previewVectrexLogo.jpg'></center>
+<center><img src='https://raw.githubusercontent.com/rpsubc8/ESP32TinyVectrex/main/preview/previewVectrexLogo.gif'></center>
 He realizado varias modificaciones:
 <ul>
  <li>Se ha portado al ESP32</li>
@@ -80,7 +80,7 @@ El archivo <b>gbConfig.h</b> se seleccionan las opciones:
 <br><br>
 <h1>Aplicaciones Test</h1>
 Se incluye el juego MineStorm:
-<center><img src='https://raw.githubusercontent.com/rpsubc8/ESP32TinyVectrex/main/preview/previewMineStorm.jpg'></center>
+<center><img src='https://raw.githubusercontent.com/rpsubc8/ESP32TinyVectrex/main/preview/previewMineStorm.gif'></center>
 <ul>
  <li>rainy (demoscene)</li>
  <li>OnslaughtElect (demoscene)</li>
