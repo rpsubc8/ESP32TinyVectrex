@@ -8,7 +8,7 @@ He realizado varias modificaciones:
  <li>Creado proyecto compatible con Arduino IDE y Platform IO</li>
  <li>Modo blanco y negro 1 bpp (2 colores) VGA2Controller</li>
  <li>Soporte de 640x480, 800x600 y 1024x768</li>
- <li>Para video se usa fabgl 1.8</li>
+ <li>Para video se usa fabgl 1.0.8</li>
  <li>Emulación a la mitad de velocidad, 23 fps en 640x480 y 19 fps en 1024x768</li>
  <li>No hay sonido por el momento</li>
 </ul>
@@ -21,7 +21,7 @@ Se requiere:
   <li>TTGO VGA32 v1.x (1.0, 1.1, 1.2, 1.4)</li>
   <li>Visual Studio 1.66.1 PLATFORMIO 2.4.3 Espressif32 v3.5.0 (python 3.6)</li>
   <li>Arduino IDE 1.8.11 Espressif System 1.0.6</li>
-  <li>Librería reducida Arduino fabgl 1.8 (incluida en proyecto PLATFORMIO)</li>
+  <li>Librería reducida Arduino fabgl 1.0.8 (incluida en proyecto PLATFORMIO)</li>
  </ul>
  <center><img src='https://raw.githubusercontent.com/rpsubc8/ESP32TinyVectrex/main/preview/ttgovga32v12.jpg'></center>
 <br><br>
@@ -43,7 +43,7 @@ Todo el proyecto es compatible con la estructura de Arduino 1.8.11.
 Tan sólo tenemos que abrir el <b>TinyVectrex.ino</b> del directorio <b>TinyVectrex</b>.
 <center><img src='https://raw.githubusercontent.com/rpsubc8/ESP32TinyVectrex/main/preview/previewArduinoIDEpreferences.gif'></center>
 Debemos instalar las extensiones de spressif en el gestor de urls adicionales de tarjetas <b>https://dl.espressif.com/dl/package_esp32_index.json</b>
-Para video se requiere instalar <b>fabgl 1.8</b>.
+Para video se requiere instalar <b>fabgl 1.0.8</b>.
 <center><img src='https://raw.githubusercontent.com/rpsubc8/ESP32TinyVectrex/main/preview/previewFabglVersion.gif'></center>
 Debemos desactivar la opción de PSRAM, y en caso de superar 1 MB de binario, seleccionar 4 MB de partición a la hora de subir. Aunque el código no use PSRAM, si la opción está activa y nuestro ESP32 no dispone de ella, se generará una excepción y reinicio del mismo en modo bucle.
 
