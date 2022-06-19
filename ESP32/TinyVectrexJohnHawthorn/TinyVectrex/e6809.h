@@ -13,7 +13,8 @@
 
 void e6809_reset (void);
 #ifdef use_lib_optimice_e6809_sstep
- unsigned int e6809_sstep (unsigned char irq_i, unsigned char irq_f);
+ ////JJ unsigned int e6809_sstep (unsigned char irq_i, unsigned char irq_f);
+ unsigned int e6809_sstep (unsigned char irq_i); //No se usa parametro 2
 #else
  unsigned e6809_sstep (unsigned irq_i, unsigned irq_f);
 #endif 

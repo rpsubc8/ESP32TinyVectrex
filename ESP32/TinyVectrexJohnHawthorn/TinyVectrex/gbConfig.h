@@ -50,4 +50,30 @@
  //30000 veces
  #define use_lib_optimice_call_alg_sstep
 
+
+ //registro flags cc de 8 bits
+ #define use_lib_reg_cc_8bits
+ //register x,y,u,s 16 bits
+ #define use_lib_reg_16bits
+ #define use_lib_reg_dp_8bits
+ #define use_lib_optimice_inst_com
+ #define use_lib_optimice_inst_lsr
+ #define use_lib_optimice_inst_ror
+ #define use_lib_optimice_inst_asr
+ #define use_lib_optimice_inst_asl
+ #define use_lib_optimice_inst_rol
+ #define use_lib_optimice_inst_dec
+ #define use_lib_optimice_inst_inc
+ #define use_lib_optimice_inst_tst8
+ #define use_lib_optimice_inst_tst16
+
+ #define use_lib_optimice_test_z16
+ #define use_lib_optimice_test_v
+ #define use_lib_optimice_sign_extend
+ #define use_lib_optimice_ea_direct
+ #define use_lib_optimice_ea_extended
+ #define use_lib_optimice_inst_and
+ #define use_lib_optimice_ea_indexed
+ #define use_lib_optimice_inst_neg
+
 #endif

@@ -6,7 +6,7 @@
 #include "gbGlobals.h"
 #include <string.h>
 
-#define einline __inline
+//#define einline __inline
 
 #ifdef use_lib_rom_no_use_ram
  const unsigned char *rom; //puntero a Flash
@@ -282,11 +282,12 @@ void alg_update ()
 #endif 
 
 #ifdef use_lib_optimice_readwrite8
- unsigned char read8 (unsigned short int address)
+ unsigned char IRAM_ATTR read8 (unsigned short int address)
 #else
  unsigned char read8 (unsigned address)
 #endif 
-{
+{//19241 veces 1 frame cuando usaba pc_read8
+ //4024 veces 1 frame. Al quitar pc_read8
 	unsigned char data;
 
 	if ((address & 0xe000) == 0xe000) {
@@ -432,7 +433,7 @@ void alg_update ()
 }
 
 #ifdef use_lib_optimice_readwrite8
- void write8 (unsigned short int address, unsigned char data)
+ void IRAM_ATTR write8 (unsigned short int address, unsigned char data)
 #else
  void write8 (unsigned address, unsigned char data)
 #endif 
@@ -1118,6 +1119,13 @@ void vecx_emu (long cycles, int ahead)
  #ifdef use_lib_optimice_call_via_sstep0   
   start_via_sstep0:
 	//unsigned char t2shift;
+
+	//if ((gb_fps_unified & 0x01) != 0)
+	//{
+	// //vector_draw_cnt=0;
+	// goto return_via_sstep0;	 
+	//}
+
 	if (via_t1on) 
 	{
 		via_t1c--;
@@ -1233,11 +1241,19 @@ void vecx_emu (long cycles, int ahead)
    //unsigned int sig_ramp;
    //unsigned int sig_blank;
 
-	if ((via_acr & 0x10) == 0x10) {
-		sig_blank = via_cb2s;
-	} else {
-		sig_blank = via_cb2h;
-	}
+	//if ((via_acr & 0x10) == 0x10) {
+	//	sig_blank = via_cb2s;
+	//} else {
+	//	sig_blank = via_cb2h;
+	//}
+
+	sig_blank= ((via_acr & 0x10) == 0x10) ? via_cb2s : via_cb2h;
+
+	//if ((gb_fps_unified & 0x01) != 0)
+	//{
+	// //vector_draw_cnt=0;
+	// goto return_alg_sstep;
+	//}
 
 	if (via_ca2 == 0) {
 		sig_dx = (ALG_MAX_X >> 1) - alg_curr_x;
@@ -1315,21 +1331,28 @@ void vecx_emu (long cycles, int ahead)
 
  while (cycles > 0) 
  {
-  icycles = e6809_sstep (via_ifr & 0x80, 0);
+  //JJ icycles = e6809_sstep (via_ifr & 0x80, 0);
+  icycles = e6809_sstep (via_ifr & 0x80); //PArametro 2 siempre 0
 
   //if ((gb_fps_unified & 0x01) != 0)    
   {
    for (c = 0; c < icycles; c++) 
    {
     #ifdef use_lib_optimice_call_via_sstep0
-     goto start_via_sstep0;
+	 //if ((gb_fps_unified & 0x01) != 0)
+	 {
+      goto start_via_sstep0;
+	 }
      return_via_sstep0:
 	#else
      via_sstep0 ();
 	#endif
 
 	#ifdef use_lib_optimice_call_alg_sstep
-	 goto start_alg_sstep;
+	 //if ((gb_fps_unified & 0x01) != 0)
+	 {
+	  goto start_alg_sstep; //Dentro tiene if ((gb_fps_unified & 0x01) != 0)
+	 }
 	 return_alg_sstep:
 	#else
      alg_sstep (); //Aniade vectores controlo dentro de alg_addline
@@ -1365,7 +1388,9 @@ void vecx_emu (long cycles, int ahead)
     {
 //     gb_time_vga_before= gb_time_now;
 	 #ifdef use_lib_gfx	 
-	  osint_render ();
+	  osint_render();
+	  //uint8_t* ptrLine= VGAController.getScanline(10);	  
+	  //memset(ptrLine,0xFF,10);
 	 #endif 
     }
    }
