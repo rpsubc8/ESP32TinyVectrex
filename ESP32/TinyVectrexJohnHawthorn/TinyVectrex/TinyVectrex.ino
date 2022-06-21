@@ -42,6 +42,22 @@ unsigned long gb_fps_ini_unified= 0;
 unsigned int gb_time_vga_before=0;
 unsigned int gb_time_now=0;
 
+#ifdef use_lib_bresenham
+ uint8_t * gb_buffer_vga[768];
+ void PreparaBitluniVGA(void);
+
+ //***************************************
+ void PreparaBitluniVGA()
+ {
+  //1024x768 da 1024x700
+  int tope = VGAController.getViewPortHeight();
+  for (unsigned int i=0; i<tope; i++)
+  {
+   gb_buffer_vga[i] = (uint8_t *)VGAController.sgetScanline(i);
+  }  
+ }
+#endif 
+
 
 void setup()
 {
@@ -68,6 +84,9 @@ void setup()
   //VGAController.setResolution(SVGA_800x600_60Hz); //resize (800,600);
   //VGAController.setResolution(SVGA_1024x768_60Hz); //resize (1024,768);
 
+  #ifdef use_lib_bresenham
+   PreparaBitluniVGA();
+  #endif
 
   //PS2Controller.begin(PS2Preset::KeyboardPort0, KbdMode::NoVirtualKeys);
   //PS2Controller.begin(PS2Preset::KeyboardPort0_MousePort1, KbdMode::GenerateVirtualKeys);  
@@ -76,7 +95,9 @@ void setup()
 
   kb_begin();
 
-  Serial.printf("END SETUP %d\n", ESP.getFreeHeap()); 
+  Serial.printf("Width:%d Hi:%d\n",VGAController.getScreenWidth(),VGAController.getScreenHeight());
+  Serial.printf("View Width:%d Hi:%d\n",VGAController.getViewPortWidth(),VGAController.getViewPortHeight());
+  Serial.printf("END SETUP %d\n", ESP.getFreeHeap());  
 }
 
 

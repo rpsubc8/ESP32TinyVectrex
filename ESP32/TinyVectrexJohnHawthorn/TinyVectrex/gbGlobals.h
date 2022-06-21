@@ -7,6 +7,8 @@
 
  #include "fabgl.h"
 
+ extern uint8_t * gb_buffer_vga[768]; 
+
  extern volatile unsigned char keymap[256];
  extern volatile unsigned char oldKeymap[256];
 

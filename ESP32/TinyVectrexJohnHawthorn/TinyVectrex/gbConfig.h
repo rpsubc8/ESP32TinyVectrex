@@ -4,7 +4,9 @@
  //Medir rendimiento sin usar fabgl video
  #define use_lib_gfx
 
- //Usar solo uno de lo 3 modos de video
+ #define use_lib_bresenham
+
+ //Usar solo uno de los 3 modos de video
  //#define use_lib_vga640x480
  //#define use_lib_vga800x600
  #define use_lib_vga1024x768

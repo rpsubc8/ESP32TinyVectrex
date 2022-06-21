@@ -84,6 +84,7 @@ unsigned char gb_salir=0;
 //Portar  //}
 //Portar }
 
+
 void swap(int *i, int *j)
 {
  int t = *i;
@@ -187,6 +188,139 @@ void jj_aalineRGBA (SDL_Surface *surface, int x1, int y1, int x2, int y2, Uint8 
 */
 
 
+
+#ifdef use_lib_bresenham
+ static void IRAM_ATTR Clear_bresenham()
+ {
+  //uint8_t * ptrVideo;
+  int tope = VGAController.getViewPortHeight();
+  for (unsigned int i=0;i<tope;i++)
+  {
+   //uint8_t* gb_buffer_vga= VGAController.getScanline(i);  
+   memset(gb_buffer_vga[i],0,128); //1024 DIV 8 
+   //ptrVideo = (uint8_t *)VGAController.sgetScanline(i);
+   //memset(ptrVideo,0,128); //1024 DIV 8 
+  }  
+  //memset(gb_buffer_vga[702],0xFF,10);
+  //ptrVideo = (uint8_t *)VGAController.sgetScanline(10);
+//  for (int i=0;i<tope;i++)
+//  {
+//   //ptrVideo = (uint8_t *)VGAController.sgetScanline(i);
+//   //memset(ptrVideo,0xFF,10);
+//   memset(gb_buffer_vga[i],0xFF,10);
+//  }  
+ }
+ 
+ static void IRAM_ATTR draw_pixel_bresenham(short int x, short int y)
+ {
+  //unsigned short int aRow;
+  uint8_t * ptrVideo;
+  unsigned char aColByte, aColShift;
+  unsigned char aBit;
+  unsigned int auxOffs;
+  
+  //if (x>=0 && x<screenx && y>=0 && y<screeny)  
+  //if (x>=0 && x<1024 && y>=0 && y<700)
+  {
+   //aRow= y;
+   aColByte= x>>3; //x div 8
+   aColShift= 7 - (x & 0x07); //x mod 8
+
+   
+   //gb_buffer_vga[y][x]= pixel;
+   
+   aBit= 1 << aColShift;
+   //gb_buffer_vga[y][aColByte]= gb_buffer_vga[y][aColByte] | aBit;
+
+   //uint8_t* gb_buffer_vga= VGAController.getScanline(y);
+   auxOffs = aColByte;
+   gb_buffer_vga[y][auxOffs]= gb_buffer_vga[y][auxOffs] | aBit;
+   //ptrVideo = (uint8_t *)VGAController.sgetScanline(y);
+   //ptrVideo[auxOffs]= ptrVideo[auxOffs] | aBit;
+  }
+ }
+
+
+ static void IRAM_ATTR draw_line_bresenham(int x1,int y1,int x2, int y2)
+ {
+        // bresenham line
+        //int x1 = cord1.x, y1 = cord1.y,
+        //    x2 = cord2.x, y2 = cord2.y,
+        //    steep = fabs(y2 - y1) > fabs(x2 - x1),
+        //    inc = -1;
+        //int steep = fabs(y2 - y1) > fabs(x2 - x1);
+
+int topeY = VGAController.getViewPortHeight();
+int topeX = VGAController.getViewPortWidth();
+
+        int steep = abs(y2 - y1) > abs(x2 - x1);
+        int inc = -1;        
+
+        if (steep) {
+                swap(&x1, &y1);
+                swap(&x2, &y2);
+        }
+
+        if (x1 > x2) {
+                swap(&x1,&x2);
+                swap(&y1,&y2);
+        }
+
+        if (y1 < y2) {
+                inc = 1;
+        }
+
+//        int dx = fabs(x2 - x1),
+//            dy = fabs(y2 - y1),
+//            y = y1, x = x1,
+//            e = 0;
+// int dx = fabs(x2 - x1);
+// int dy = fabs(y2 - y1);
+int dx = abs(x2 - x1);
+int dy = abs(y2 - y1);
+int y = y1;
+int x = x1;
+int e = 0;
+
+
+        for (x; x <= x2; x++) {
+                if (steep) 
+                {
+                 //draw_pixel( y, x, 255);
+                 if (y>=0 && y<topeX && x>=0 && x<topeY)
+                 {
+                  draw_pixel_bresenham(y,x);
+                 }
+                 else
+                 {
+                  return;
+                 }
+                } 
+                else 
+                {
+                 //draw_pixel( x, y, 255);
+                 if (x>=0 && x<topeX && y>=0 && y<topeY)
+                 {
+                  draw_pixel_bresenham(x,y);
+                 }
+                 else
+                 {
+                  return;
+                 }
+                }
+
+                if ((e + dy) << 1 < dx) {
+                        e = e + dy;
+                } else {
+                        y += inc;
+                        e = e + dy - dx;
+                }
+        }
+ }
+#endif
+
+
+
 void osint_render()
 {
  //Portar SDL_FillRect(screen, NULL, 0);  
@@ -213,6 +347,9 @@ void osint_render()
 
  #ifdef use_lib_gfx
 
+#ifdef use_lib_bresenham
+ Clear_bresenham();
+#else
  Canvas cv(&VGAController);
  fabgl::Primitive p;
  Point auxPoint;
@@ -243,14 +380,18 @@ void osint_render()
  // Serial.printf("vcnt:%d tope:%d\n",vector_draw_cnt,GetVECTOR_CNT());
  // //fflush(stdout);
  //}
+#endif
     
  #ifdef use_lib_vectortiny
   //cv.setPenColor(Color::White);    
   //BEGIN setPenColor
-  p.cmd = fabgl::PrimitiveCmd::SetPenColor;
-  p.color = Color::White;
-  VGAController.addPrimitive(p);
-  //END setPenColor
+  #ifdef use_lib_bresenham
+  #else
+   p.cmd = fabgl::PrimitiveCmd::SetPenColor;
+   p.color = Color::White;
+   VGAController.addPrimitive(p);
+   //END setPenColor
+  #endif 
 
   for(v = 0; v < vector_draw_cnt; v++)
   {   
@@ -277,14 +418,19 @@ void osint_render()
     //x1= offx + x1 / scl_factor;
     //y1= offy + y1 / scl_factor;  
     //cv.setPixel(x0,y0,Color::White);
-    //BEGIN setPixel    
-    p.cmd = fabgl::PrimitiveCmd::SetPixelAt;
-    //auxPoint.X= x0;
-    //auxPoint.Y= y0;
-    auxPoint = {x0,y0};
-    p.pixelDesc = { auxPoint, Color::White };
-    VGAController.addPrimitive(p);
-    //END setPixel
+    //BEGIN setPixel   
+    #ifdef use_lib_bresenham
+     //draw_line_bresenham(x0,y0,x0,x0);
+     draw_pixel_bresenham(x0,y0);
+    #else
+     p.cmd = fabgl::PrimitiveCmd::SetPixelAt;
+     //auxPoint.X= x0;
+     //auxPoint.Y= y0;
+     auxPoint = {x0,y0};
+     p.pixelDesc = { auxPoint, Color::White };
+     VGAController.addPrimitive(p);
+     //END setPixel
+    #endif 
    
 //Portar    jj_aalineRGBA_tiny(screen,x0,y0,x1,y1);
    //cv.drawLine(x0, y0, x1, y1);   
@@ -299,21 +445,29 @@ void osint_render()
     y0= offy + y0 / scl_factor;
     x1= offx + x1 / scl_factor;
     y1= offy + y1 / scl_factor;     
-    //BEGIN moveTo   
-    p.cmd = fabgl::PrimitiveCmd::MoveTo;
-    p.position = Point(x0, y0);         
-    VGAController.addPrimitive(p);
-    //End moveTo
+    #ifdef use_lib_bresenham
+     draw_line_bresenham(x0,y0,x1,y1);
+    #else
+     //BEGIN moveTo   
+     p.cmd = fabgl::PrimitiveCmd::MoveTo;
+     p.position = Point(x0, y0);         
+     VGAController.addPrimitive(p);
+     //End moveTo    
 
-    //Begin lineTo
-    //Primitive p;
-    p.cmd = fabgl::PrimitiveCmd::LineTo;
-    p.position = Point(x1,y1);
-    VGAController.addPrimitive(p);
-    //End lineTo
+     //Begin lineTo
+     //Primitive p;
+     p.cmd = fabgl::PrimitiveCmd::LineTo;
+     p.position = Point(x1,y1);
+     VGAController.addPrimitive(p);
+     //End lineTo
+    #endif 
    }
   }
-  VGAController.processPrimitives();
+  
+  #ifdef use_lib_bresenham
+  #else
+   VGAController.processPrimitives();
+  #endif 
 
   vga_end = micros();
   unsigned int time_prev = vga_end - vga_begin;

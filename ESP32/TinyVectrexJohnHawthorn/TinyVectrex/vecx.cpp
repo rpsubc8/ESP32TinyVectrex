@@ -1389,7 +1389,7 @@ void vecx_emu (long cycles, int ahead)
 //     gb_time_vga_before= gb_time_now;
 	 #ifdef use_lib_gfx	 
 	  osint_render();
-	  //uint8_t* ptrLine= VGAController.getScanline(10);	  
+	  //uint8_t* ptrLine= VGAController.getScanline(10);
 	  //memset(ptrLine,0xFF,10);
 	 #endif 
     }
