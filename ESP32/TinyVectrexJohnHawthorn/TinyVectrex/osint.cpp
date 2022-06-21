@@ -194,10 +194,12 @@ void jj_aalineRGBA (SDL_Surface *surface, int x1, int y1, int x2, int y2, Uint8 
  {
   //uint8_t * ptrVideo;
   int tope = VGAController.getViewPortHeight();
+  unsigned char topeByte= (VGAController.getViewPortWidth()>>3); //DIV 8
   for (unsigned int i=0;i<tope;i++)
   {
    //uint8_t* gb_buffer_vga= VGAController.getScanline(i);  
-   memset(gb_buffer_vga[i],0,128); //1024 DIV 8 
+   //memset(gb_buffer_vga[i],0,128); //1024 DIV 8 
+   memset(gb_buffer_vga[i],0,topeByte); //1024 DIV 8 
    //ptrVideo = (uint8_t *)VGAController.sgetScanline(i);
    //memset(ptrVideo,0,128); //1024 DIV 8 
   }  
