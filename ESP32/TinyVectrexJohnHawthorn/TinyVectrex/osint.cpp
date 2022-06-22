@@ -92,6 +92,14 @@ void swap(int *i, int *j)
  *j = t;
 }
 
+void swap_short(short int *i, short int *j)
+{
+ short int t = *i;
+ *i = *j;
+ *j = t;
+}
+
+
 #ifdef use_lib_vectortiny
  //****************************************************************************
 //Portar  void jj_aalineRGBA_tiny(SDL_Surface *surface, int x0, int y0, int x1, int y1)
@@ -243,7 +251,7 @@ void jj_aalineRGBA (SDL_Surface *surface, int x1, int y1, int x2, int y2, Uint8 
  }
 
 
- static void IRAM_ATTR draw_line_bresenham(int x1,int y1,int x2, int y2)
+ static void IRAM_ATTR draw_line_bresenham(short int x1,short int y1,short int x2, short int y2)
  {
         // bresenham line
         //int x1 = cord1.x, y1 = cord1.y,
@@ -259,13 +267,13 @@ int topeX = VGAController.getViewPortWidth();
         int inc = -1;        
 
         if (steep) {
-                swap(&x1, &y1);
-                swap(&x2, &y2);
+                swap_short(&x1, &y1);
+                swap_short(&x2, &y2);
         }
 
         if (x1 > x2) {
-                swap(&x1,&x2);
-                swap(&y1,&y2);
+                swap_short(&x1,&x2);
+                swap_short(&y1,&y2);
         }
 
         if (y1 < y2) {

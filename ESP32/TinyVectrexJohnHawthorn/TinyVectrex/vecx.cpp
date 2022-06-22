@@ -1250,6 +1250,7 @@ void vecx_emu (long cycles, int ahead)
 	sig_blank= ((via_acr & 0x10) == 0x10) ? via_cb2s : via_cb2h;
 
 	//if ((gb_fps_unified & 0x01) != 0)
+	//if ((gb_fps_unified & 0x03) != 0)
 	//{
 	// //vector_draw_cnt=0;
 	// goto return_alg_sstep;

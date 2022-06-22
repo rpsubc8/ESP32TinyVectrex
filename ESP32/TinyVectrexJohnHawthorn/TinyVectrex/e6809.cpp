@@ -377,7 +377,8 @@ static inline void set_reg_d (unsigned short int value)
   {//cart
    return (cart[reg_pc++]);
   }
-  return 0xFF;
+  //return 0xFF;
+  return ( read8(reg_pc++));
  }
 #else
  static inline unsigned pc_read8 (void)
@@ -414,7 +415,10 @@ static inline void set_reg_d (unsigned short int value)
    data= (data<<8)|(cart[reg_pc++]);
    return data;
   }
-  return 0xFFFF;
+  //return 0xFFFF;
+  data = read16 (reg_pc);
+  reg_pc += 2;
+  return data;  
   
  }
 #else
