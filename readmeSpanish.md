@@ -89,7 +89,6 @@ https://rpsubc8.github.io/ESP32TinyVectrex/www/vectrex/output
 </pre>
 
  Para activar este modo, se debe descomentar la línea <b>use_lib_wifi</b> en el <b>gbConfig.h</b><br>
-Dado el consumo de sram, sólo se permite el modo 48K, cuando se usa la WIFI.<br>
  Debemos configurar en el archivo <b>gbWIFIConfig.h</b> los datos:
  <pre>
   #define gb_wifi_ssd "nombreDeNuestraRedWIFIdelRooter"
