@@ -12,6 +12,7 @@ He realizado varias modificaciones:
  <li>Para video se usa fabgl 1.0.8</li>
  <li>Emulación a la mitad de velocidad, 23 fps en 640x480 y 19 fps en 1024x768</li>
  <li>No hay sonido por el momento</li>
+ <li>Soporte para leer cartuchos via WIFI</li>
 </ul>
 
 
