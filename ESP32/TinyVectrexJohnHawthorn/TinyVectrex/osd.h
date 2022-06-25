@@ -18,5 +18,5 @@ void SDLActivarOSDMainMenu();
 void SDLOSDClear(void);
 //JJ SDL_Surface * SDLOSDGetSurface();
 void SDLEsperaTeclado(void);
-void load_prg(unsigned char id);
+//void load_prg(unsigned char id);
 #endif

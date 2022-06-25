@@ -1,9 +1,16 @@
 #include "gbConfig.h"
 #include "osd.h"
-#include "dataFlash/gbrom.h"
+#ifndef use_lib_wifi
+ #include "dataFlash/gbrom.h"
+#endif 
 #include "gbGlobals.h"
 #include "fabgl.h"
 #include "PS2Kbd.h"
+
+#ifdef use_lib_wifi
+ #include "gbWifiConfig.h"
+ #include "gbWifi.h" 
+#endif
 
 #define BLACK   0
 #define BLUE    4
@@ -102,6 +109,8 @@ unsigned char gb_show_osd_main_menu=0;
 
 
 
+
+
 #define max_gb_osd_screen 1
 const char * gb_osd_screen[max_gb_osd_screen]={
  "Pixels Left"//,
@@ -125,17 +134,25 @@ const char * gb_osd_screen_values[max_gb_osd_screen_values]={
 
 //#define max_gb_main_menu 8
 #define max_gb_main_menu 3
-const char * gb_main_menu[max_gb_main_menu]={
- "Load CARTDRIDGE",
- "Reset",
- //"Speed",
- //"Screen Adjust",
- //"Reset",
- //"Test 8",
- //"Test 64",
- //"Dump DSK",
- "Return"
-};
+#ifdef use_lib_wifi
+ const char * gb_main_menu[max_gb_main_menu]={
+  "Load CARTDRIDGE WIFI",
+  "Reset",
+  //"Speed",
+  //"Screen Adjust",
+  //"Reset",
+  //"Test 8",
+  //"Test 64",
+  //"Dump DSK",
+  "Return"
+ };
+#else
+ const char * gb_main_menu[max_gb_main_menu]={
+  "Load CARTDRIDGE",
+  "Reset",
+  "Return"
+ };
+#endif 
 
 
 #define max_gb_speed_sound_menu 7
@@ -179,6 +196,8 @@ const char * gb_speed_menu[max_gb_speed_menu]={
  "8x",
  "16x"
 };
+
+
 
 
 //****************************
@@ -294,76 +313,140 @@ unsigned char ShowTinyMenu(const char *cadTitle,const char **ptrValue,unsigned c
  //gb_show_osd_main_menu= 0;
  //return aReturn;
 
- /*
- if (keyboard->isKeyboardAvailable())
- {
-  keyboard->emptyVirtualKeyQueue();
-  while (salir == 0)  
-  {   
-   if (keyboard->virtualKeyAvailable()>0)
-   {    
-    if (keyboard->isVKDown(fabgl::VK_UP)){                
-     if (aReturn>0) aReturn--;
-     OSDMenuRowsDisplayScroll(ptrValue,aReturn,aMax);    
-    }
-    if (keyboard->isVKDown(fabgl::VK_DOWN)){          
-     if (aReturn < (aMax-1)) aReturn++;
-     OSDMenuRowsDisplayScroll(ptrValue,aReturn,aMax);     
-    }
-    if (
-        (keyboard->isVKDown(fabgl::VK_KP_ENTER))
-        || 
-        (keyboard->isVKDown(fabgl::VK_RETURN))
-       ){          
-     salir= 1;     
-    }
-    if (keyboard->isVKDown(fabgl::VK_ESCAPE)){          
-     salir= 1;
-     aReturn= 255;     
-    }    
-    keyboard->emptyVirtualKeyQueue();
-   }//fin tecla en cola
-   
-  }    
- }
- */
- 
-
- //PortarSDL_Flip(gb_osd_sdl_surface); 
- /*Portar
- while (salir == 0)
- {
-  SDL_PollEvent(gb_osd_sdl_event);
-  if(SDL_WaitEvent(gb_osd_sdl_event))
-  {
-   if(gb_osd_sdl_event->type == SDL_KEYDOWN)
-   {    
-    switch(gb_osd_sdl_event->key.keysym.sym)
-    {
-     case SDLK_UP: 
-      if (aReturn>0) aReturn--;
-      OSDMenuRowsDisplayScroll(ptrValue,aReturn,aMax);
-      break;
-     case SDLK_DOWN:
-      if (aReturn < (aMax-1)) aReturn++;
-      OSDMenuRowsDisplayScroll(ptrValue,aReturn,aMax);
-      break;
-     case SDLK_KP_ENTER: case SDLK_RETURN: salir= 1;break;
-     case SDLK_ESCAPE: salir=1; aReturn= 255; break;
-     default: break;
-    }
-    SDL_Flip(gb_osd_sdl_surface);
-    SDL_PollEvent(gb_osd_sdl_event);
-   }  
-  }  
- }
- */
  gb_show_osd_main_menu= 0;
  return aReturn;
  #else
   return 0;
  #endif
 }
+
+
+#ifdef use_lib_wifi
+ //***************************
+ void ShowStatusWIFI(unsigned char aState)
+ {
+  if (aState == 1)
+  {
+   //SDLprintText("WIFI LOAD",8,8,ID_COLOR_BLACK,ID_COLOR_WHITE);   
+  }
+  else
+  {  
+   //SDLprintText("         ",8,8,ID_COLOR_BLACK,ID_COLOR_BLACK);
+  }
+ }
+
+ //**********************************************************************************
+ void OSDMenuRowsDisplayScrollFromWIFI(unsigned char *ptrBuffer,unsigned char currentId,unsigned char aMax) 
+ {//Dibuja varias lineas 
+  #ifdef use_lib_gfx
+   Canvas cv(&VGAController); 
+   cv.setGlyphOptions(GlyphOptions().FillBackground(true));
+ 
+   cv.setPenColor(Color::Black);
+   cv.setBrushColor(Color::Black);    
+
+   char cadName8[10];
+   cadName8[8]='\0';
+   for (int i=0;i<gb_osd_max_rows;i++)
+   {
+    //SDLprintText("                    ",gb_pos_x_menu,gb_pos_y_menu+8+(i<<3),ID_COLOR_BLACK,ID_COLOR_BLACK);
+    cv.drawText(gb_pos_x_menu,gb_pos_y_menu+8+(i<<3),"                    ");
+   }
+ 
+   for (int i=0;i<gb_osd_max_rows;i++)
+   {
+    if (currentId >= aMax){
+     break;
+    }
+    memcpy(cadName8, &ptrBuffer[(currentId*8)], 8);
+    cadName8[8]='\0';
+    //SDLprintText(ptrValue[currentId],gb_pos_x_menu,gb_pos_y_menu+8+(i<<3),((i==0)?ID_COLOR_WHITE:ID_COLOR_WHITE),((i==0)?ID_COLOR_MAGENTA:ID_COLOR_BLACK));
+    //SDLprintText((const char*)cadName8,gb_pos_x_menu,gb_pos_y_menu+8+(i<<3),((i==0)?ID_COLOR_WHITE:ID_COLOR_WHITE),((i==0)?ID_COLOR_MAGENTA:ID_COLOR_BLACK));
+    if (i==0){
+     cv.setPenColor(Color::Black);
+     cv.setBrushColor(Color::White);
+    }
+    else{
+     cv.setPenColor(Color::White);
+     cv.setBrushColor(Color::Black);    
+    }
+    cv.drawText(gb_pos_x_menu,gb_pos_y_menu+8+(i<<3),(const char*)cadName8);
+    currentId++;
+   }     
+  #endif 
+ }
+
+
+ //**********************************************************************************
+ unsigned char ShowTinyMenuFromWIFI(const char *cadTitle,unsigned char *ptrBuffer,unsigned char aMax)
+ {
+  unsigned char aReturn=0;
+  unsigned char salir=0;   
+  #ifdef use_lib_gfx
+   Canvas cv(&VGAController);
+
+   cv.setGlyphOptions(GlyphOptions().FillBackground(true));
+   cv.setPenColor(Color::Black);
+   cv.setBrushColor(Color::Black); 
+   cv.clear();
+   cv.selectFont(&fabgl::FONT_8x8);
+   cv.setPenColor(Color::White);
+   cv.setBrushColor(Color::Black);
+   cv.drawText(gb_pos_x_menu-(4<<3), gb_pos_y_menu-16,"ESP32 VECTREX by Ackerman");
+   cv.setPenColor(Color::White);
+   cv.setBrushColor(Color::Black);
+   for (int i=0;i<20;i++){
+    cv.drawText(gb_pos_x_menu+(i<<3),gb_pos_y_menu," ");
+   }
+   cv.setPenColor(Color::Black);
+   cv.setBrushColor(Color::White); 
+   cv.drawText(gb_pos_x_menu,gb_pos_y_menu,cadTitle);
+   cv.setPenColor(Color::White);
+   cv.setBrushColor(Color::Black);   
+
+   
+   OSDMenuRowsDisplayScrollFromWIFI(ptrBuffer,0,aMax);
+
+
+  while (salir == 0)
+  {  
+   if (checkAndCleanKey(KEY_CURSOR_LEFT))
+   {
+    if (aReturn>10) aReturn-=10;
+    OSDMenuRowsDisplayScrollFromWIFI(ptrBuffer,aReturn,aMax);
+   }
+   if (checkAndCleanKey(KEY_CURSOR_RIGHT))
+   {
+    if (aReturn<(aMax-10)) aReturn+=10;
+    OSDMenuRowsDisplayScrollFromWIFI(ptrBuffer,aReturn,aMax);
+   }
+   if (checkAndCleanKey(KEY_CURSOR_UP))
+   {
+    if (aReturn>0) aReturn--;
+    OSDMenuRowsDisplayScrollFromWIFI(ptrBuffer,aReturn,aMax);
+   }
+   if (checkAndCleanKey(KEY_CURSOR_DOWN))
+   {
+    if (aReturn < (aMax-1)) aReturn++;
+    OSDMenuRowsDisplayScrollFromWIFI(ptrBuffer,aReturn,aMax);
+   } 
+   if (checkAndCleanKey(KEY_ENTER))
+   {
+    salir= 1;
+   }
+   if (checkAndCleanKey(KEY_ESC))
+   {
+    salir=1; aReturn= 255;
+   }
+  }
+  gb_show_osd_main_menu= 0;
+
+  #endif
+  return aReturn;
+ } 
+#endif
+
+
 
 
 //Sobra
@@ -420,7 +503,69 @@ void ShowTinyD64Menu()
 void ShowTinyROMMenu()
 {
  unsigned char aSelNum;     
- aSelNum = ShowTinyMenu("CARTDRIDGE",gb_list_rom_title,max_list_rom);
+ #ifdef use_lib_wifi
+  unsigned char aSelType;
+  //unsigned char aSelNum;
+  unsigned char tope;
+  int leidos=0;
+  //char cadUrl[256];
+  if (Check_WIFI() == true)
+  {
+   //PreparaURL(cadUrl, "/outlist/cart", "", (char*)"cart", "txt");
+   PreparaURL(gb_cadUrl, "/outlist/cart", "", (char*)"cart", "txt");   
+   #ifdef use_lib_wifi_debug
+    //Serial.printf("URL:%s\n",cadUrl);    
+    Serial.printf("URL:%s\n",gb_cadUrl);    
+   #endif
+   ShowStatusWIFI(1);
+   //Asignar_URL_stream_WIFI(cadUrl);
+   Asignar_URL_stream_WIFI(gb_cadUrl);
+   Leer_url_stream_WIFI(&leidos);
+   ShowStatusWIFI(0);
+   #ifdef use_lib_wifi_debug
+    Serial.printf("Leidos:%d\n",leidos);
+   #endif
+   tope = gb_size_file_wifi>>3; //DIV 8
+   #ifdef use_lib_wifi_debug
+    Serial.printf("Tope:%d\n",tope);
+   #endif
+   if (tope<1){
+    return;
+   }
+   if (tope>127)
+   {
+    tope= 127;
+   }
+   aSelNum = ShowTinyMenuFromWIFI("CARTDRIDGE WIFI",gb_buffer_wifi,tope);
+   if (aSelNum == 255){
+    return;
+   }
+   char cadFile[10];
+   for (int i=0;i<8;i++)
+   {
+    cadFile[i]= gb_buffer_wifi[(aSelNum*8)+i];
+    if (cadFile[i] ==' '){
+     cadFile[i]='\0';
+    }
+   }
+   cadFile[8]='\0';
+   #ifdef use_lib_wifi_debug
+    Serial.printf("Select:%d\n",aSelNum);
+   #endif
+   //PreparaURL(cadUrl, "/outdat/cart/", "", cadFile,"bin");
+   PreparaURL(gb_cadUrl, "/outdat/cart/", "", cadFile,"bin");
+   #ifdef use_lib_wifi_debug
+    //Serial.printf("URL:%s\n",cadUrl);    
+    Serial.printf("URL:%s\n",gb_cadUrl);    
+   #endif 
+   ShowStatusWIFI(1);   
+   //WIFI changeSna2FlashFromWIFI(cadUrl,1);
+   //strcpy(gb_cadUrl,cadUrl);
+   ShowStatusWIFI(0);
+  }  
+ #else
+  aSelNum = ShowTinyMenu("CARTDRIDGE",gb_list_rom_title,max_list_rom);
+ #endif 
 
  //gb_cartfilename= (char *)gb_list_rom_title[aSelNum];
  gb_load_new_rom = 1;

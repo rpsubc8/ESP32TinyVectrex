@@ -7,6 +7,12 @@
 
  #include "fabgl.h"
 
+ #ifdef use_lib_wifi
+  extern unsigned char gb_buffer_wifi[1024]; //128 * 8
+  extern int gb_size_file_wifi;
+  extern char gb_cadUrl[128];
+ #endif 
+
  extern uint8_t * gb_buffer_vga[768]; 
 
  extern volatile unsigned char keymap[256];

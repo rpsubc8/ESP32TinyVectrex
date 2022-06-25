@@ -4,7 +4,12 @@
  //Medir rendimiento sin usar fabgl video
  #define use_lib_gfx
 
- //#define use_lib_bresenham
+ //WIFI para leer juegos.Consume RAM
+ //Hay que configurar el gbWifiConfig.h
+ //#define use_lib_wifi
+
+ //No usar la cola primitivas fabgl (Ahorra memoria)
+ //#define use_lib_remove_fabgl_queue
 
  //Usar solo uno de los 3 modos de video
  //#define use_lib_vga640x480
@@ -30,6 +35,18 @@
  //No usa 8192 bytes de BIOS rom
  //#define use_lib_rom_no_use_ram
  
+
+ #ifdef use_lib_wifi
+  #ifndef use_lib_cartdridge_flash_ram
+   #define use_lib_cartdridge_flash_ram   
+  #endif
+  #ifndef use_lib_rom_no_use_ram
+   #define use_lib_rom_no_use_ram
+  #endif 
+ #endif
+
+ //Salida log puerto serie usb
+ #define use_lib_log_serial 
 
 
  #define gb_ms_vga 50

@@ -18,6 +18,22 @@
 
 #include "PS2Kbd.h"
 
+#ifdef use_lib_wifi
+ #include "gbWifi.h"
+ #include <WiFi.h>
+ //#include <WiFiMulti.h>
+ #include <HTTPClient.h>
+ #include "gbWifiConfig.h"
+ //#include <esp_wifi.h>
+ //WiFiMulti wifiMulti;
+ HTTPClient http;
+ WiFiClient * stream;
+ 
+ unsigned char gb_buffer_wifi[1024]; //128 ficheros * 8
+ int gb_size_file_wifi=0; 
+ char gb_cadUrl[128]="";
+#endif
+
 
 
 #ifdef use_lib_gfx
@@ -42,7 +58,7 @@ unsigned long gb_fps_ini_unified= 0;
 unsigned int gb_time_vga_before=0;
 unsigned int gb_time_now=0;
 
-#ifdef use_lib_bresenham
+#ifdef use_lib_remove_fabgl_queue
  uint8_t * gb_buffer_vga[768];
  void PreparaBitluniVGA(void);
 
@@ -61,7 +77,9 @@ unsigned int gb_time_now=0;
 
 void setup()
 {
-  Serial.begin(115200);  
+  #ifdef use_lib_log_serial
+   Serial.begin(115200);
+  #endif 
   //delay(500); //avoid garbage into the UART
   
   #ifdef use_lib_gfx
@@ -84,7 +102,7 @@ void setup()
   //VGAController.setResolution(SVGA_800x600_60Hz); //resize (800,600);
   //VGAController.setResolution(SVGA_1024x768_60Hz); //resize (1024,768);
 
-  #ifdef use_lib_bresenham
+  #ifdef use_lib_remove_fabgl_queue
    PreparaBitluniVGA();
   #endif
 
@@ -95,9 +113,46 @@ void setup()
 
   kb_begin();
 
-  Serial.printf("Width:%d Hi:%d\n",VGAController.getScreenWidth(),VGAController.getScreenHeight());
-  Serial.printf("View Width:%d Hi:%d\n",VGAController.getViewPortWidth(),VGAController.getViewPortHeight());
-  Serial.printf("END SETUP %d\n", ESP.getFreeHeap());  
+  #ifdef use_lib_wifi
+   #ifdef use_lib_log_serial
+    Serial.printf("RAM before WIFI %d\n",ESP.getFreeHeap());
+   #endif 
+   //for(uint8_t t = 4; t > 0; t--) 
+   //{
+   //   Serial.printf("[SETUP] WAIT %d...\n", t);
+   //   Serial.flush();
+   //   delay(1000);
+   //}
+   //wifiMulti.addAP(gb_wifi_ssd, gb_wifi_pass);     
+
+   WiFi.mode(WIFI_STA);
+   //esp_wifi_set_ps(WIFI_PS_NONE); //Ahorro energia desactivado
+   WiFi.begin(gb_wifi_ssd, gb_wifi_pass);
+
+   for(unsigned char t = 4; t > 0; t--)
+   {
+    #ifdef use_lib_wifi_debug
+     Serial.printf("WIFI WAIT %d...\n", t);
+     Serial.flush();
+    #endif
+    delay(1000);
+   }
+   //AsignarOSD_WIFI(&wifiMulti, &http, stream);
+   //AsignarOSD_WIFI(&http, stream);
+   Asignar_WIFI(&http, stream);
+   Check_WIFI();
+   #ifdef use_lib_wifi_debug
+    Serial.print("IP address:");
+    Serial.println(WiFi.localIP());
+   #endif 
+   //AsignarDISK_WIFI(&http, stream);
+  #endif  
+
+  #ifdef use_lib_log_serial
+   Serial.printf("Width:%d Hi:%d\n",VGAController.getScreenWidth(),VGAController.getScreenHeight());
+   Serial.printf("View Width:%d Hi:%d\n",VGAController.getViewPortWidth(),VGAController.getViewPortHeight());
+   Serial.printf("END SETUP %d\n", ESP.getFreeHeap());
+  #endif 
 }
 
 

@@ -10,9 +10,11 @@
 #include "osint.h"
 #include "vecx.h"
 
-#ifdef use_lib_cartdridge_flash_ram
- #include "dataFlash/gbrom.h"
-#endif
+#ifndef use_lib_wifi
+ #ifdef use_lib_cartdridge_flash_ram
+  #include "dataFlash/gbrom.h"
+ #endif
+#endif 
 
 //#ifdef use_lib_rom_no_use_ram
  #include "dataFlash/gbbios.h"
@@ -22,6 +24,11 @@
 #include "PS2Kbd.h"
 #include "PS2KeyCode.h"
 #include "PS2Kbd.h"
+
+#ifdef use_lib_wifi
+ #include "gbWifiConfig.h"
+ #include "gbWifi.h" 
+#endif
 
 
 #define EMU_TIMER 20 // the emulators heart beats at 20 milliseconds
@@ -197,7 +204,7 @@ void jj_aalineRGBA (SDL_Surface *surface, int x1, int y1, int x2, int y2, Uint8 
 
 
 
-#ifdef use_lib_bresenham
+#ifdef use_lib_remove_fabgl_queue
  static void IRAM_ATTR Clear_bresenham()
  {
   //uint8_t * ptrVideo;
@@ -357,7 +364,7 @@ void osint_render()
 
  #ifdef use_lib_gfx
 
-#ifdef use_lib_bresenham
+#ifdef use_lib_remove_fabgl_queue
  Clear_bresenham();
 #else
  Canvas cv(&VGAController);
@@ -395,7 +402,7 @@ void osint_render()
  #ifdef use_lib_vectortiny
   //cv.setPenColor(Color::White);    
   //BEGIN setPenColor
-  #ifdef use_lib_bresenham
+  #ifdef use_lib_remove_fabgl_queue
   #else
    p.cmd = fabgl::PrimitiveCmd::SetPenColor;
    p.color = Color::White;
@@ -429,7 +436,7 @@ void osint_render()
     //y1= offy + y1 / scl_factor;  
     //cv.setPixel(x0,y0,Color::White);
     //BEGIN setPixel   
-    #ifdef use_lib_bresenham
+    #ifdef use_lib_remove_fabgl_queue
      //draw_line_bresenham(x0,y0,x0,x0);
      draw_pixel_bresenham(x0,y0);
     #else
@@ -455,7 +462,7 @@ void osint_render()
     y0= offy + y0 / scl_factor;
     x1= offx + x1 / scl_factor;
     y1= offy + y1 / scl_factor;     
-    #ifdef use_lib_bresenham
+    #ifdef use_lib_remove_fabgl_queue
      draw_line_bresenham(x0,y0,x1,y1);
     #else
      //BEGIN moveTo   
@@ -474,7 +481,7 @@ void osint_render()
    }
   }
   
-  #ifdef use_lib_bresenham
+  #ifdef use_lib_remove_fabgl_queue
   #else
    VGAController.processPrimitives();
   #endif 
@@ -545,11 +552,82 @@ static char *romfilename = "rom.dat";
 static char *cartfilename = NULL;
 //static char *cartfilename = "rainy.bin";
 
+#ifdef use_lib_wifi
+ //void load_cart_WIFI(char * cadUrl)
+ void load_cart_WIFI()
+ {
+  int auxFileSize=0;
+
+  //if (strcmp(cadUrl,"")==0)  
+  if (strcmp(gb_cadUrl,"")==0)
+  {
+   #ifdef use_lib_wifi_debug
+    Serial.printf("cart name empty\n");
+   #endif          
+   return;
+  }
+
+  #ifdef use_lib_wifi_debug
+   Serial.printf("load_cart_WIFI\n");
+  #endif
+  #ifdef use_lib_wifi_debug
+   Serial.printf("Check WIFI\n");
+  #endif 
+  if (Check_WIFI() == false)
+  {
+   return;
+  }
+  int leidos=0;
+  #ifdef use_lib_wifi_debug
+   //Serial.printf("URL:%s\n",cadUrl);
+   Serial.printf("URL:%s\n",gb_cadUrl);   
+  #endif   
+  //Asignar_URL_stream_WIFI(cadUrl);
+  Asignar_URL_stream_WIFI(gb_cadUrl);
+  auxFileSize= gb_size_file_wifi;
+  #ifdef use_lib_wifi_debug
+   Serial.printf("Size cart:%d\n",gb_size_file_wifi);
+  #endif
+  Leer_url_stream_WIFI(&leidos);
+  #ifdef use_lib_wifi_debug
+   Serial.printf("Leidos:%d\n",leidos); //Leemos 1024 bytes
+  #endif
+
+  //He leido 1024 bytes. Lee resto
+  int contBuffer=0;
+  int cont1024= 0;
+  while (contBuffer< auxFileSize)
+  {
+   if (contBuffer>= sizeof(cart))
+   {
+    #ifdef use_lib_wifi_debug
+     Serial.printf("Limit exced cart 32768\n");
+    #endif            
+    break;
+   }
+   cart[contBuffer]= gb_buffer_wifi[cont1024];
+   contBuffer++;
+
+   cont1024++;
+   if (cont1024 >= 1024)
+   {
+    Leer_url_stream_WIFI(&leidos);
+    #ifdef use_lib_wifi_debug
+     Serial.printf("Leidos:%d\n",leidos);
+    #endif 
+    cont1024= 0;
+   }
+  }
+
+ }
+#endif
 
 static void initLoadROM()
 {
    #ifdef use_lib_rom_no_use_ram
-    Serial.printf("Load rom FLASH\n");
+    #ifdef use_lib_log_serial
+     Serial.printf("Load rom FLASH\n");
+    #endif 
     //fflush(stdout);
     rom= gb_rom_bios;
    #else
@@ -573,26 +651,43 @@ static void initLoadROM()
 
     #ifdef use_lib_cartdridge_no_use_ram
     #else
- 	 memset(cart, 0, sizeof (cart));
- 	#endif
+     memset(cart, 0, sizeof (cart));
+    #endif
+             
+    #ifdef use_lib_cartdridge_flash_ram
+     #ifdef use_lib_log_serial
+      #ifdef use_lib_wifi
+       Serial.printf("Load cartdridge FLASH WIFI id:%d name:%s\n",gb_id_cur_rom,gb_cadUrl);
+      #else
+       Serial.printf("Load cartdridge FLASH id:%d size:%d\n",gb_id_cur_rom,gb_list_cart_size[gb_id_cur_rom]);
+      #endif 
+     #endif
 
-	#ifdef use_lib_cartdridge_flash_ram
-     Serial.printf("Load cartdridge FLASH id:%d size:%d\n",gb_id_cur_rom,gb_list_cart_size[gb_id_cur_rom]);
-     int topeCartBytes;
-     if (gb_list_cart_size[gb_id_cur_rom] < 32768){
-      topeCartBytes= gb_list_cart_size[gb_id_cur_rom];
-     }
-     else{
-      topeCartBytes= 32768;
-      Serial.printf("Excede tamanio Cartucho 32768 bytes\n");
-     }
+     #ifdef use_lib_wifi      
+     #else
+      int topeCartBytes;
+      if (gb_list_cart_size[gb_id_cur_rom] < 32768){
+       topeCartBytes= gb_list_cart_size[gb_id_cur_rom];
+      }
+      else{
+       topeCartBytes= 32768;
+       #ifdef use_lib_log_serial
+        Serial.printf("Excede tamanio Cartucho 32768 bytes\n");
+       #endif 
+      }
+     #endif
+
      #ifdef use_lib_cartdridge_no_use_ram
       cart = gb_list_rom_data[gb_id_cur_rom];
      #else
-  	  memcpy(cart, gb_list_rom_data[gb_id_cur_rom], topeCartBytes);
-  	 #endif 
-     //fflush(stdout);
-	#else	
+      #ifdef use_lib_wifi
+       load_cart_WIFI(); //uso gb_cadUrl
+      #else
+       memcpy(cart, gb_list_rom_data[gb_id_cur_rom], topeCartBytes);
+      #endif 
+     #endif
+     
+    #else	
 	 if(cartfilename)
      {
 		FILE *f;
@@ -607,7 +702,7 @@ static void initLoadROM()
 		fread(cart, 1, sizeof (cart), f);
 		fclose(f);
 	 }
-	#endif 
+    #endif 
 }
 
 void resize(int width, int height)
@@ -917,7 +1012,9 @@ void osint_emuloop()
       gb_fps_time_ini_unified= gb_currentTime;
       unsigned int aux_fps= gb_fps_unified - gb_fps_ini_unified;
       gb_fps_ini_unified = gb_fps_unified;
-      Serial.printf ("fps:%d %d m:%d mx:%d v %d m:%d mx:%d\n",aux_fps,gb_stats_time_cur_unified,gb_stats_time_min_unified,gb_stats_time_max_unified,gb_stats_video_cur_unified,gb_stats_video_min_unified,gb_stats_video_max_unified);
+      #ifdef use_lib_log_serial
+       Serial.printf ("fps:%d %d m:%d mx:%d v %d m:%d mx:%d\n",aux_fps,gb_stats_time_cur_unified,gb_stats_time_min_unified,gb_stats_time_max_unified,gb_stats_video_cur_unified,gb_stats_video_min_unified,gb_stats_video_max_unified);
+      #endif 
       gb_stats_time_min_unified = 500000;
       gb_stats_time_max_unified = 0;
       gb_stats_video_min_unified = 500000;
@@ -941,13 +1038,14 @@ void osint_emuloop()
 //********************************
 void ImprimeMemoria()
 {
- Serial.printf("VECTREX_MHZ:%d\n",VECTREX_MHZ);
- Serial.printf("VECTREX_PDECAY:%d\n",GetVECTREX_PDECAY()); 
- Serial.printf("VECTOR_CNT:%d\n",GetVECTOR_CNT());
- Serial.printf("vectors_set:%d bytes\n",GetSizeBytes_vectors_set());
- Serial.printf("VECTOR_HASH:%d\n",GetVECTOR_HASH());
- Serial.printf("vector_hash:%d bytes\n",GetSizeBytes_vector_hash());
- 
+ #ifdef use_lib_log_serial        
+  Serial.printf("VECTREX_MHZ:%d\n",VECTREX_MHZ);
+  Serial.printf("VECTREX_PDECAY:%d\n",GetVECTREX_PDECAY()); 
+  Serial.printf("VECTOR_CNT:%d\n",GetVECTOR_CNT());
+  Serial.printf("vectors_set:%d bytes\n",GetSizeBytes_vectors_set());
+  Serial.printf("VECTOR_HASH:%d\n",GetVECTOR_HASH());
+  Serial.printf("vector_hash:%d bytes\n",GetSizeBytes_vector_hash());
+ #endif 
  //fflush(stdout);
 }
 
@@ -979,10 +1077,10 @@ int mainEmulator()
   
   //resize(360,480);  
   //resize(360,240);
-
-  Serial.printf("Sizeof long:%d\n",sizeof(long));
-  Serial.printf("screenx:%d screeny:%d\n",screenx,screeny);
-  //fflush(stdout);
+  #ifdef use_lib_log_serial
+   Serial.printf("Sizeof long:%d\n",sizeof(long));
+   Serial.printf("screenx:%d screeny:%d\n",screenx,screeny);
+  #endif  
   
 //Portar   if(argc > 1)
 //Portar   {
