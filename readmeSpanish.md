@@ -75,8 +75,70 @@ El archivo <b>gbConfig.h</b> se seleccionan las opciones:
  <li><b>use_lib_vga640x480:</b> Modo de video 640x480.</li>
  <li><b>use_lib_vga800x600:</b> Modo de video 800x600.</li>
  <li><b>use_lib_vga1024x768:</b> Modo de video 1024x768.</li>
+ <li><b>use_lib_gfx:</b> Deshabilita la salida de video. No muestra nada por pantalla. Usar solo para medir tiempos de emulación.</li>
+ <li><b>use_lib_wifi:</b> Activa la WIFI para poder cargar cartuchos desde un servidor web. Al requerir mucha RAM, se aconseja usar un servidor http, en lugar de https. Se debe introducir el nombre de red y clave en el fichero gbWifiConfig.h</li>
 </ul>
+
+
+<br><br>
+<h1>Soporte WIFI</h1>
+Se ha añadido para TEST un soporte básico de WIFI, para poder cargar los cartuchos (bin) desde un servidor básico HTML, sin necesidad de CORS, por lo que el despliegue es muy rápido. Se puede usar un Servidor Apache, NGINX, etc...<br>
+Por defecto, se ha dejado apuntando al servidor local, dado que el pages de github del proyecto requiere https (consumo de RAM), y dará fallo de memoria:
+<pre>
+https://rpsubc8.github.io/ESP32TinyVectrex/www/vectrex/output
+</pre>
+
+ Para activar este modo, se debe descomentar la línea <b>use_lib_wifi</b> en el <b>gbConfig.h</b><br>
+Dado el consumo de sram, sólo se permite el modo 48K, cuando se usa la WIFI.<br>
+ Debemos configurar en el archivo <b>gbWIFIConfig.h</b> los datos:
+ <pre>
+  #define gb_wifi_ssd "nombreDeNuestraRedWIFIdelRooter"
+  #define gb_wifi_pass "passwordDeNuestraRedWIFIdelRooter"
+
+  //#define gb_wifi_url_base_path "http://192.168.0.36/vectrex/output"
+  #define gb_wifi_url_base_path "https://rpsubc8.github.io/ESP32TinyVectrex/www/vectrex/output"
+
+  //millisecons delay stream read
+  #define gb_wifi_delay_available 0
+
+  #define use_lib_wifi_debug
+ </pre>
  
+ Por ahora, la configuración está fijada en nuestro <b>gbWIFIConfig.h</b> que tendremos que recompilar, de manera, que sólo se conectará a nuestra red del rooter. Por tanto debemos de cambiar <b>gb_wifi_ssd</b> y <b>gb_wifi_pass</b>.<br>
+ El <b>gb_wifi_url_base_path</b> es la ruta en donde se encuentran nuestros directorios <b>outlist</b> y <b>outdat</b>, que contienen el listado de archivos, así como los mismos, por lo que dicho path será diferente si usamos un servidor local.<br><br>
+ El concepto es simple, se dispone de:
+ <pre>
+  outlist --> Fichero con la lista de nombres (longitud 8) de bin. Límite de 128 ficheros
+  outdat  --> Los fichero bin.
+ </pre>
+ Por ahora, para optimizar el consumo de RAM, se ha dejado una estructura de longitud de nombres 8:3, es decir, 8 caracteres de nombre y 3 de extensión. Dejo unas tools intermedias para preparar y hacer la conversión:<br>
+ <pre>
+  build.bat --> Lanza todos los bats, procesando input en output
+  
+  data83.bat --> Convierte todos los archivos input a formato 8:3
+  
+  list.bat --> Genera los outlist (lista de archivos).
+  dsk.exe --> Genera un txt que dentro contiene la lista de archivos con longitud de nombre 8.
+  lowercart.bat --> Convierte las extensiones BIN a .bin  
+ </pre>
+
+ Un ejemplo de <b>outlist</b>, por ejemplo de cart.txt, que contiene:
+ <pre>
+ ArmorAttBedlam  Berzerk BlitzActCleanBosCleanSweCosmicChDarkToweDEADLINEdemo2019
+ </pre>
+ 
+ Siempre que se añada un fichero, debemos de regenerar la lista con el <b>list.bat</b> o bien llamando a todo el proceso <b>build.bat</b>.<br>
+ 
+ Dentro esta la lista de archivos con longitud máxima de 8 caracteres, que es la que se mostrará en el menu de selección de cartucho en el ESP32. Estos archivos, por ahora están pensados para un máximo de 128 entradas, que equivale a 1024 bytes (128 x 8).<br>
+ Cada vez que se hace una petición a un tipo, se carga el fichero .TXT con la lista (1024 bytes, 128 nombres). Y cuando se selecciona, se hace la petición al fichero que se encuentra en el outdat.<br>
+ Cuando se seleccione un archivo, se procederá a cargarlo en <b>outdat</b> con su ruta. Los archivos tienen que tener la extensión en minúsculas.<br>
+ 
+ Si se usa un servidor externo WEB, es posible, que por políticas impida realizar peticiones seguidas, así que es recomendable no hacer peticiones muy seguidas.<br>
+ 
+ Para depurar la WIFI, se debe descomentar <b>use_lib_wifi_debug</b> en el fichero <b>gbWifiConfig.h</b>
+
+
+
 
 <br><br>
 <h1>Aplicaciones Test</h1>
