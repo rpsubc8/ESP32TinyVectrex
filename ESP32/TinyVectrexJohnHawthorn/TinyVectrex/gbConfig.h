@@ -71,6 +71,28 @@
 
 
  //registro flags cc de 8 bits
+ #define use_lib_snd_regs_8bits
+ #define use_lib_snd_select_8bits
+ #define use_lib_via_ora_8bits
+ #define use_lib_via_orb_8bits
+ #define use_lib_via_ddra_8bits
+ #define use_lib_via_ddrb_8bits
+ #define use_lib_via_t1on_8bits
+ #define use_lib_via_t1int_8bits
+ #define use_lib_via_t1pb7_8bits
+ #define use_lib_via_t2on_8bits
+ #define use_lib_via_t2int_8bits
+ #define use_lib_via_srb_8bits
+ #define use_lib_via_src_8bits
+ #define use_lib_via_srclk_8bits
+ #define use_lib_via_acr_8bits
+ #define use_lib_via_pcr_8bits
+ #define use_lib_via_ifr_8bits
+ #define use_lib_via_ier_8bits
+ #define use_lib_via_ca2_8bits
+ #define use_lib_via_cb2h_8bits
+ #define use_lib_alg_jch_8bits
+
  #define use_lib_reg_cc_8bits
  //register x,y,u,s 16 bits
  #define use_lib_reg_16bits
@@ -93,6 +115,6 @@
  #define use_lib_optimice_ea_extended
  #define use_lib_optimice_inst_and
  #define use_lib_optimice_ea_indexed
- #define use_lib_optimice_inst_neg
+ #define use_lib_optimice_inst_neg 
 
 #endif

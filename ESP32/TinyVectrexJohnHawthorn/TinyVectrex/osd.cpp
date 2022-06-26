@@ -325,14 +325,24 @@ unsigned char ShowTinyMenu(const char *cadTitle,const char **ptrValue,unsigned c
  //***************************
  void ShowStatusWIFI(unsigned char aState)
  {
-  if (aState == 1)
-  {
-   //SDLprintText("WIFI LOAD",8,8,ID_COLOR_BLACK,ID_COLOR_WHITE);   
-  }
-  else
-  {  
-   //SDLprintText("         ",8,8,ID_COLOR_BLACK,ID_COLOR_BLACK);
-  }
+  #ifdef use_lib_gfx
+   Canvas cv(&VGAController);
+   cv.setGlyphOptions(GlyphOptions().FillBackground(true));
+   if (aState == 1)
+   {
+    //SDLprintText("WIFI LOAD",8,8,ID_COLOR_BLACK,ID_COLOR_WHITE);
+    cv.setPenColor(Color::Black);
+    cv.setBrushColor(Color::White);
+    cv.drawText(8,8,"WIFI LOAD");
+   }
+   else
+   {  
+    //SDLprintText("         ",8,8,ID_COLOR_BLACK,ID_COLOR_BLACK);   
+    cv.setPenColor(Color::Black);
+    cv.setBrushColor(Color::Black);   
+    cv.drawText(8,8,"         ");
+   }
+  #endif 
  }
 
  //**********************************************************************************

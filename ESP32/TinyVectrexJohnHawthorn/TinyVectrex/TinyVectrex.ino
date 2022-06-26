@@ -6,7 +6,8 @@
 //VGA2Controller 1 bpp
 //Visual Studio 1.66.1 PLATFORMIO 2.4.3 Espressif32 v3.5.0 (python 3.6)
 //Arduino IDE 1.8.11 Espressif System 1.0.6
-//Video fabgl 1.8 (required Arduino IDE)
+//Video fabgl 1.0.8 (required Arduino IDE)
+//WIFI support load cart (http recommended)
 
 #include "gbConfig.h"
 
@@ -81,6 +82,10 @@ void setup()
    Serial.begin(115200);
   #endif 
   //delay(500); //avoid garbage into the UART
+
+  #ifdef use_lib_wifi
+   cart= (unsigned char *)malloc(32768); //Ahorro memoria WIFI   
+  #endif
   
   #ifdef use_lib_gfx
    VGAController.begin();  

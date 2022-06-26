@@ -205,7 +205,11 @@ void jj_aalineRGBA (SDL_Surface *surface, int x1, int y1, int x2, int y2, Uint8 
 
 
 #ifdef use_lib_remove_fabgl_queue
+ #ifdef use_lib_wifi
+  static void Clear_bresenham()
+ #else
  static void IRAM_ATTR Clear_bresenham()
+ #endif
  {
   //uint8_t * ptrVideo;
   int tope = VGAController.getViewPortHeight();
@@ -228,7 +232,11 @@ void jj_aalineRGBA (SDL_Surface *surface, int x1, int y1, int x2, int y2, Uint8 
 //  }  
  }
  
- static void IRAM_ATTR draw_pixel_bresenham(short int x, short int y)
+ #ifdef use_lib_wifi
+  static void draw_pixel_bresenham(short int x, short int y)
+ #else
+  static void IRAM_ATTR draw_pixel_bresenham(short int x, short int y)
+ #endif
  {
   //unsigned short int aRow;
   uint8_t * ptrVideo;
@@ -257,8 +265,11 @@ void jj_aalineRGBA (SDL_Surface *surface, int x1, int y1, int x2, int y2, Uint8 
   }
  }
 
-
- static void IRAM_ATTR draw_line_bresenham(short int x1,short int y1,short int x2, short int y2)
+ #ifdef use_lib_wifi
+  static void draw_line_bresenham(short int x1,short int y1,short int x2, short int y2)
+ #else
+  static void IRAM_ATTR draw_line_bresenham(short int x1,short int y1,short int x2, short int y2)
+ #endif
  {
         // bresenham line
         //int x1 = cord1.x, y1 = cord1.y,
@@ -681,7 +692,9 @@ static void initLoadROM()
       cart = gb_list_rom_data[gb_id_cur_rom];
      #else
       #ifdef use_lib_wifi
+       ShowStatusWIFI(1);
        load_cart_WIFI(); //uso gb_cadUrl
+       ShowStatusWIFI(0);
       #else
        memcpy(cart, gb_list_rom_data[gb_id_cur_rom], topeCartBytes);
       #endif 

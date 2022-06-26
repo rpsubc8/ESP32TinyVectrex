@@ -44,11 +44,22 @@ enum {
 // extern unsigned char cart[32768];
 //#endif 
 
-extern unsigned int snd_regs[16];
-extern unsigned int alg_jch0;
-extern unsigned int alg_jch1;
-extern unsigned int alg_jch2;
-extern unsigned int alg_jch3;
+#ifdef use_lib_snd_regs_8bits
+ extern unsigned char snd_regs[16];
+#else
+ extern unsigned int snd_regs[16];
+#endif
+#ifdef use_lib_alg_jch_8bits
+ extern unsigned char alg_jch0;
+ extern unsigned char alg_jch1;
+ extern unsigned char alg_jch2;
+ extern unsigned char alg_jch3;
+#else
+ extern unsigned int alg_jch0;
+ extern unsigned int alg_jch1;
+ extern unsigned int alg_jch2;
+ extern unsigned int alg_jch3;
+#endif 
 
 #ifdef use_lib_vectortiny
  extern int vector_draw_cnt;

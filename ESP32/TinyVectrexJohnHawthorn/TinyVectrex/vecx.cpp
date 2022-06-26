@@ -17,41 +17,124 @@
 #ifdef use_lib_cartdridge_no_use_ram
  const unsigned char *cart; //puntero a Flash
 #else
- unsigned char cart[32768];
+ #ifdef use_lib_wifi
+  unsigned char *cart; //malloc ahorro memoria
+ #else
+  unsigned char cart[32768];
+ #endif 
 #endif 
 static unsigned char ram[1024];
 
-/* the sound chip registers */
+//the sound chip registers
 
-unsigned int snd_regs[16];
-static unsigned snd_select;
+#ifdef use_lib_snd_regs_8bits
+ unsigned char snd_regs[16];
+#else
+ unsigned int snd_regs[16];
+#endif
+#ifdef use_lib_snd_select_8bits
+ static unsigned char snd_select;
+#else
+ static unsigned snd_select;
+#endif 
 
-/* the via 6522 registers */
-
-static unsigned via_ora;
-static unsigned via_orb;
-static unsigned via_ddra;
-static unsigned via_ddrb;
-static unsigned via_t1on;  /* is timer 1 on? */
-static unsigned via_t1int; /* are timer 1 interrupts allowed? */
+//the via 6522 registers
+#ifdef use_lib_via_ora_8bits
+ static unsigned char via_ora;
+#else
+ static unsigned via_ora;
+#endif 
+#ifdef use_lib_via_orb_8bits
+ static unsigned char via_orb;
+#else
+ static unsigned via_orb;
+#endif 
+#ifdef use_lib_via_ddra_8bits
+ static unsigned char via_ddra;
+#else
+ static unsigned via_ddra;
+#endif
+#ifdef use_lib_via_ddrb_8bits
+ static unsigned char via_ddrb;
+#else
+ static unsigned via_ddrb;
+#endif 
+#ifdef use_lib_via_t1on_8bits
+ static unsigned char via_t1on;  //is timer 1 on?
+#else
+ static unsigned via_t1on;  //is timer 1 on?
+#endif 
+#ifdef use_lib_via_t1int_8bits
+ static unsigned char via_t1int; //are timer 1 interrupts allowed?
+#else
+ static unsigned via_t1int; //are timer 1 interrupts allowed?
+#endif 
 static unsigned via_t1c;
 static unsigned via_t1ll;
 static unsigned via_t1lh;
-static unsigned via_t1pb7; /* timer 1 controlled version of pb7 */
-static unsigned via_t2on;  /* is timer 2 on? */
-static unsigned via_t2int; /* are timer 2 interrupts allowed? */
+#ifdef use_lib_via_t1pb7_8bits
+ static unsigned char via_t1pb7;
+#else
+ static unsigned via_t1pb7; //timer 1 controlled version of pb7
+#endif 
+#ifdef use_lib_via_t2on_8bits
+ static unsigned char via_t2on;
+#else
+ static unsigned via_t2on;  //is timer 2 on?
+#endif 
+#ifdef use_lib_via_t2int_8bits
+ static unsigned char via_t2int;
+#else
+ static unsigned via_t2int; //are timer 2 interrupts allowed?
+#endif 
 static unsigned via_t2c;
 static unsigned via_t2ll;
 static unsigned via_sr;
-static unsigned via_srb;   /* number of bits shifted so far */
-static unsigned via_src;   /* shift counter */
-static unsigned via_srclk;
-static unsigned via_acr;
-static unsigned via_pcr;
-static unsigned via_ifr;
-static unsigned via_ier;
-static unsigned via_ca2;
-static unsigned via_cb2h;  /* basic handshake version of cb2 */
+#ifdef use_lib_via_srb_8bits
+ static unsigned char via_srb;
+#else
+ static unsigned via_srb;   //number of bits shifted so far
+#endif 
+#ifdef use_lib_via_src_8bits
+ static unsigned char via_src;
+#else
+ static unsigned via_src;   //shift counter
+#endif 
+#ifdef use_lib_via_srclk_8bits
+ static unsigned char via_srclk;
+#else
+ static unsigned via_srclk;
+#endif 
+#ifdef use_lib_via_acr_8bits
+ static unsigned char via_acr;
+#else
+ static unsigned via_acr;
+#endif 
+#ifdef use_lib_via_pcr_8bits
+ static unsigned char via_pcr;
+#else
+ static unsigned via_pcr;
+#endif
+#ifdef use_lib_via_ifr_8bits
+ static unsigned char via_ifr;
+#else
+ static unsigned via_ifr;
+#endif 
+#ifdef use_lib_via_ier_8bits
+ static unsigned char via_ier;
+#else
+ static unsigned via_ier;
+#endif
+#ifdef use_lib_via_ca2_8bits
+ static unsigned char via_ca2;
+#else
+ static unsigned via_ca2;
+#endif
+#ifdef use_lib_via_cb2h_8bits
+ static unsigned char via_cb2h;
+#else
+ static unsigned via_cb2h;  //basic handshake version of cb2
+#endif 
 static unsigned via_cb2s;  /* version of cb2 controlled by the shift register */
 
 /* analog devices */
@@ -60,10 +143,17 @@ static unsigned int alg_rsh;  /* zero ref sample and hold */
 static unsigned int alg_xsh;  /* x sample and hold */
 static unsigned int alg_ysh;  /* y sample and hold */
 static unsigned int alg_zsh;  /* z sample and hold */
-unsigned int alg_jch0;		  /* joystick direction channel 0 */
-unsigned int alg_jch1;		  /* joystick direction channel 1 */
-unsigned int alg_jch2;		  /* joystick direction channel 2 */
-unsigned int alg_jch3;		  /* joystick direction channel 3 */
+#ifdef use_lib_alg_jch_8bits
+ unsigned char alg_jch0;
+ unsigned char alg_jch1;
+ unsigned char alg_jch2;
+ unsigned char alg_jch3;
+#else
+ unsigned int alg_jch0;		  //joystick direction channel 0
+ unsigned int alg_jch1;		  //joystick direction channel 1
+ unsigned int alg_jch2;		  //joystick direction channel 2
+ unsigned int alg_jch3;		  //joystick direction channel 3
+#endif 
 static unsigned int alg_jsh;  /* joystick sample and hold */
 
 static unsigned int alg_compare;
@@ -282,7 +372,11 @@ void alg_update ()
 #endif 
 
 #ifdef use_lib_optimice_readwrite8
- unsigned char IRAM_ATTR read8 (unsigned short int address)
+ #ifdef use_lib_wifi
+  unsigned char read8 (unsigned short int address)
+ #else
+  unsigned char IRAM_ATTR read8 (unsigned short int address)
+ #endif 
 #else
  unsigned char read8 (unsigned address)
 #endif 
@@ -433,7 +527,11 @@ void alg_update ()
 }
 
 #ifdef use_lib_optimice_readwrite8
- void IRAM_ATTR write8 (unsigned short int address, unsigned char data)
+ #ifdef use_lib_wifi
+  void write8 (unsigned short int address, unsigned char data)
+ #else
+  void IRAM_ATTR write8 (unsigned short int address, unsigned char data)
+ #endif 
 #else
  void write8 (unsigned address, unsigned char data)
 #endif 

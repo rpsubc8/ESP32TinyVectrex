@@ -13,7 +13,9 @@
   extern char gb_cadUrl[128];
  #endif 
 
- extern uint8_t * gb_buffer_vga[768]; 
+ #ifdef use_lib_remove_fabgl_queue
+  extern uint8_t * gb_buffer_vga[768];
+ #endif 
 
  extern volatile unsigned char keymap[256];
  extern volatile unsigned char oldKeymap[256];
@@ -69,7 +71,11 @@
  #ifdef use_lib_cartdridge_no_use_ram
   extern const unsigned char *cart; //puntero a Flash RAM
  #else
-  extern unsigned char cart[32768];
+  #ifdef use_lib_wifi
+   extern unsigned char * cart; //malloc ahorro memoria
+  #else
+   extern unsigned char cart[32768];
+  #endif 
  #endif
  
 #endif
