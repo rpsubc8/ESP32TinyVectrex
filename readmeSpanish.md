@@ -13,12 +13,12 @@ He realizado varias modificaciones:
  <li>Emulación a la mitad de velocidad, 23 fps en 640x480 y 19 fps en 1024x768</li>
  <li>No hay sonido por el momento</li>
  <li>Soporte para leer cartuchos via WIFI</li>
- <li>Versión precompilada (flash download 3.9.2)</li>
+ <li>Versión precompilada (flash download 3.9.2) 1024x768</li>
 </ul>
 
 <br><br>
 <h1>Versión precompilada</h1>
-En la carpeta precompile se encuentra una versión ya compilada para poder ser grabada con el flash download tool 3.9.2. Se trata de una versión para el modo de video 1024x768 y los juego de demostración en FLASH.
+En la carpeta precompile se encuentra una versión ya compilada para poder ser grabada con el flash download tool 3.9.2. Se trata de una versión para el modo de video 1024x768 y los juegos de demostración en FLASH.
 <a href='https://github.com/rpsubc8/ESP32TinyVectrex/tree/main/ESP32/precompile'>https://github.com/rpsubc8/ESP32TinyVectrex/tree/main/ESP32/precompile</a><br>
 Debemos de elegir el tipo ESP32:
 <center><img src='https://raw.githubusercontent.com/rpsubc8/ESP32TinyVectrex/main/preview/flash00.gif'></center>
