@@ -563,7 +563,8 @@ void ShowTinyROMMenu()
     Serial.printf("Select:%d\n",aSelNum);
    #endif
    //PreparaURL(cadUrl, "/outdat/cart/", "", cadFile,"bin");
-   PreparaURL(gb_cadUrl, "/outdat/cart/", "", cadFile,"bin");
+   //PreparaURL(gb_cadUrl, "/outdat/cart/", "", cadFile,"bin");
+   PreparaURL(gb_cadUrl, "/outdat/cart", "", cadFile,"bin");
    #ifdef use_lib_wifi_debug
     //Serial.printf("URL:%s\n",cadUrl);    
     Serial.printf("URL:%s\n",gb_cadUrl);    
