@@ -27,3 +27,26 @@ We must choose the ESP32 type:
 Subsequently, select the files as shown in the attached screenshot, with the same offset values:
 <center><img src='https://raw.githubusercontent.com/rpsubc8/ESP32TinyVectrex/main/preview/flash01.gif'></center>
 And we will press start. If everything has been correct, we will only have to restart the ESP32.
+
+
+<br><br>
+<h1>Requirements</h1>
+Required:
+ <ul>
+  <li>TTGO VGA32 v1.x (1.0, 1.1, 1.2, 1.4)</li>
+  <li>Visual Studio 1.66.1 PLATFORMIO 2.4.3 Espressif32 v3.5.0 (python 3.6)</li>
+  <li>Arduino IDE 1.8.11 Espressif System 1.0.6</li>
+  <li>Arduino fabgl 1.0.8 reduced library (included in PLATFORMIO project)</li>
+ </ul>
+ <center><img src='https://raw.githubusercontent.com/rpsubc8/ESP32TinyVectrex/main/preview/ttgovga32v12.jpg'></center>
+<br><br>
+
+
+<h1>PlatformIO</h1>
+PLATFORMIO 2.4.3 must be installed from the Visual Studio extensions. Espressif32 v3.5.0 (python 3.6) is also required.
+<center><img src='https://raw.githubusercontent.com/rpsubc8/ESP32TinyVectrex/main/preview/previewPlatformIOinstall.gif'></center>
+The <b>TinyVectrex</b> working directory is then selected.
+We must modify the <b>platformio.ini</b> file the <b>upload_port</b> option to select the COM port where we have our TTGO VGA32 board.
+<center><img src='https://raw.githubusercontent.com/rpsubc8/ESP32TinyVectrex/main/preview/previewPlatformIO.gif'></center>
+Then we will proceed to compile and upload to the board. No partitions are used, so we must upload the entire compiled binary.
+It is all set up so you don't have to install the fabgl libraries.
